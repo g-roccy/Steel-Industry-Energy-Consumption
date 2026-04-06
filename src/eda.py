@@ -9,7 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from config import TARGET_COL, DATE_COL, PLOT_STYLE, FIGURE_SIZE, FIGURE_DPI, FIGURES_PATH
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -19,10 +23,10 @@ class EDA:
     
     def __init__(self, data):
         self.data = data
-        sns.set_style('darkgrid')
-        plt.rcParams['figure.figsize'] = (14, 8)
+        sns.set_style(PLOT_STYLE)
+        plt.rcParams['figure.figsize'] = FIGURE_SIZE
         
-    def time_series_plot(self, date_col='date', target_col='Usage_kWh'):
+    def time_series_plot(self, date_col=DATE_COL, target_col=TARGET_COL):
         """Plot time series of energy consumption"""
         logger.info("Creating time series plot...")
         
@@ -35,9 +39,9 @@ class EDA:
         plt.xticks(rotation=45)
         plt.tight_layout()
         
-        path = Path('reports/figures/01_time_series.png')
+        path = Path(FIGURES_PATH) / '01_time_series.png'
         path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(path, dpi=300, bbox_inches='tight')
+        plt.savefig(path, dpi=FIGURE_DPI, bbox_inches='tight')
         plt.close()
         logger.info(f"✓ Saved: {path}")
     
@@ -63,9 +67,9 @@ class EDA:
             fig.delaxes(axes[idx])
         
         plt.tight_layout()
-        path = Path('reports/figures/02_distributions.png')
+        path = Path(FIGURES_PATH) / '02_distributions.png'
         path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(path, dpi=300, bbox_inches='tight')
+        plt.savefig(path, dpi=FIGURE_DPI, bbox_inches='tight')
         plt.close()
         logger.info(f"✓ Saved: {path}")
     
@@ -82,9 +86,9 @@ class EDA:
         ax.set_title('Correlation Matrix - Energy Consumption Analysis', fontsize=14, fontweight='bold')
         plt.tight_layout()
         
-        path = Path('reports/figures/03_correlation_heatmap.png')
+        path = Path(FIGURES_PATH) / '03_correlation_heatmap.png'
         path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(path, dpi=300, bbox_inches='tight')
+        plt.savefig(path, dpi=FIGURE_DPI, bbox_inches='tight')
         plt.close()
         logger.info(f"✓ Saved: {path}")
     

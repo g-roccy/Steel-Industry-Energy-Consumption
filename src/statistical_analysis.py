@@ -7,10 +7,14 @@ Provides statistical tests and analysis for energy consumption data
 import pandas as pd
 import numpy as np
 import logging
+import sys
 from scipy.stats import shapiro, anderson
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from config import TARGET_COL, PLOT_STYLE, FIGURES_PATH
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -21,7 +25,7 @@ class StatisticalAnalyzer:
     def __init__(self, data):
         self.data = data
         self.results = {}
-        sns.set_style('darkgrid')
+        sns.set_style(PLOT_STYLE)
         
     def descriptive_statistics(self):
         """Calculate descriptive statistics"""
@@ -77,8 +81,8 @@ class StatisticalAnalyzer:
         numeric_data = self.data.select_dtypes(include=[np.number])
         pearson_corr = numeric_data.corr(method='pearson')
         
-        if 'Usage_kWh' in pearson_corr.columns:
-            target_corr = pearson_corr['Usage_kWh'].sort_values(ascending=False)
+        if TARGET_COL in pearson_corr.columns:
+            target_corr = pearson_corr[TARGET_COL].sort_values(ascending=False)
             logger.info(f"\n🎯 Correlation with Usage_kWh:")
             for var, corr in target_corr.items():
                 logger.info(f"   {var}: {corr:.4f}")
@@ -92,11 +96,11 @@ class StatisticalAnalyzer:
         logger.info("ENERGY EFFICIENCY METRICS")
         logger.info("="*60)
         
-        if 'Usage_kWh' not in self.data.columns:
+        if TARGET_COL not in self.data.columns:
             logger.warning("Usage_kWh column not found")
             return None
-        
-        usage = self.data['Usage_kWh']
+
+        usage = self.data[TARGET_COL]
         
         peak_load = usage.max()
         base_load = usage.quantile(0.25)
